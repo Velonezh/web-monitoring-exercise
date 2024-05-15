@@ -8,10 +8,22 @@ body {
   margin: 0;
 }
 
+.video-windows {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  padding: 20px;
+}
+
+.video-window {
+  flex: 1;
+  padding: 10px;
+}
+
 video {
+  width: 100%;
+  height: auto;
   border: 1px solid #ccc;
-  width: 640px;
-  height: 480px;
 }
 
 .controls {

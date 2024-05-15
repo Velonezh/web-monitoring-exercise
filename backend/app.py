@@ -1,28 +1,31 @@
 from flask import Flask, request, jsonify
-from tensorflow.keras.models import load_model
-import numpy as np
-from PIL import Image
-import io
+from flask_cors import CORS
+import tensorflow as tf
+import tempfile
+import os
 
 app = Flask(__name__)
-model = load_model('C:\\Users\\Amikr\\Documents\\Thesis\\main\\monitoring-web\\backend\\model-6-layers-1.3.h5')  # Update the path to your model file
+CORS(app)  # Enable CORS for all routes
 
-def preprocess_image(image):
-    # Example preprocessing - modify based on your model's requirements
-    image = image.resize((224, 224))  # Resize the image if your model requires it
-    image = np.array(image)
-    image = image / 255.0  # Normalize the image if required
-    image = np.expand_dims(image, axis=0)  # Add batch dimension
-    return image
+model = tf.keras.models.load_model('model-6-layers-1.3.h5')
 
-@app.route('/process_frame', methods=['POST'])
-def process_frame():
-    file = request.files['frame']
-    image = Image.open(io.BytesIO(file.read()))
-    preprocessed_image = preprocess_image(image)
-    prediction = model.predict(preprocessed_image)
-    class_name = np.argmax(prediction, axis=1)[0]  # Modify based on your model's output
-    return jsonify({'class_name': str(class_name)})
+def process_video(video_path):
+    # Implement video processing and prediction logic here
+    # For demonstration, we'll just return a dummy prediction
+    return "Exercise Class"
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    video_file = request.files['file']
+    temp_dir = tempfile.mkdtemp()
+    video_path = os.path.join(temp_dir, video_file.filename)
+    video_file.save(video_path)
+
+    prediction = process_video(video_path)
+    os.remove(video_path)
+    os.rmdir(temp_dir)
+
+    return jsonify({'prediction': prediction})
 
 if __name__ == '__main__':
     app.run(debug=True)

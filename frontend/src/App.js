@@ -1,26 +1,49 @@
 import React, { useState } from 'react';
 import VideoCapture from './components/VideoCapture';
+import VideoPlayer from './components/VideoPlayer';
 import './index.css';
 
 const App = () => {
+  const [videoSrc, setVideoSrc] = useState('');
   const [activity, setActivity] = useState('None');
 
-  const handleStart = async (stream) => {
-    // Implement model loading and activity classification logic here
-    setActivity('Analyzing...');
-    // Example of sending a frame to the backend for prediction
-    // You would replace this with actual video frame processing
-    // and prediction logic
-  };
+  const handleStop = async (mediaBlobUrl) => {
+    setVideoSrc(mediaBlobUrl);
+    setActivity('Processing...');
 
-  const handleStop = () => {
-    setActivity('None');
+    try {
+      const response = await fetch(mediaBlobUrl);
+      const blob = await response.blob();
+      const formData = new FormData();
+      formData.append('file', blob, 'exercise-video.webm');
+
+      const result = await fetch('http://localhost:5000/predict', {
+        method: 'POST',
+        body: formData
+      });
+      if (!result.ok) {
+        throw new Error(`HTTP error! status: ${result.status}`);
+      }
+      const data = await result.json();
+      setActivity(data.prediction);
+    } catch (error) {
+      console.error('Error:', error);
+      setActivity('Failed to fetch');
+    }
   };
 
   return (
     <div className="App">
-      <h1>Elderly Exercise Activity Monitor</h1>
-      <VideoCapture onStart={handleStart} onStop={handleStop} />
+      <h1>FINAL PROJECT</h1>
+      <div className="video-windows">
+        <div className="video-window">
+          <h2>For Recording</h2>
+          <VideoCapture onStop={handleStop} />
+        </div>
+        <div className="video-window">
+          <VideoPlayer videoSrc={videoSrc} />
+        </div>
+      </div>
       <div id="activityOutput">Detected Activity: {activity}</div>
     </div>
   );
