@@ -3,7 +3,7 @@ import React from 'react';
 const VideoPlayer = ({ videoSrc }) => {
     return (
         <div>
-            <h2>Saved Video</h2>
+            <h2>Classify the Exercise</h2>
             <video src={videoSrc} controls></video>
         </div>
     );

@@ -34,10 +34,10 @@ const App = () => {
 
   return (
     <div className="App">
-      <h1>FINAL PROJECT</h1>
+      <h1>Elderly Exercise Monitoring</h1>
       <div className="video-windows">
         <div className="video-window">
-          <h2>For Recording</h2>
+          <h2>Recording State</h2>
           <VideoCapture onStop={handleStop} />
         </div>
         <div className="video-window">
